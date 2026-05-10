@@ -24,6 +24,7 @@
   --text3: #64748b;
   --rr-color: #00d4ff;
   --sjf-color: #ff6b35;
+  --srtf-color: #7c3aed;
   --radius: 12px;
   --shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
@@ -75,6 +76,7 @@ header {
 }
 .pill.rr { background:rgba(0,212,255,0.15); color:var(--rr-color); border:1px solid rgba(0,212,255,0.3); }
 .pill.sjf { background:rgba(255,107,53,0.15); color:var(--sjf-color); border:1px solid rgba(255,107,53,0.3); }
+.pill.srtf { background:rgba(124,58,237,0.15); color:var(--srtf-color); border:1px solid rgba(124,58,237,0.3); }
 
 .main-grid {
   display: grid;
@@ -225,6 +227,7 @@ table.proc-table {
 .gantt-title { font-size:13px; font-weight:700; }
 .gantt-title.rr { color:var(--rr-color); }
 .gantt-title.sjf { color:var(--sjf-color); }
+.gantt-title.srtf { color:var(--srtf-color); }
 .gantt-body { padding:20px; }
 
  
@@ -276,6 +279,7 @@ table.metrics-table {
   font-weight:700; color:var(--accent);
 }
 .metrics-table.sjf-table tr.avg-row td { color:var(--sjf-color); }
+.metrics-table.srtf-table tr.avg-row td { color:var(--srtf-color); }
 .metric-val { font-weight:600; }
 .best { color:var(--green) !important; }
 .tie { color:var(--yellow) !important; }
@@ -303,6 +307,7 @@ table.metrics-table {
 .bar-fill { height:100%; border-radius:4px; transition:width .6s cubic-bezier(.4,0,.2,1); }
 .bar-fill.rr { background:var(--rr-color); }
 .bar-fill.sjf { background:var(--sjf-color); }
+.bar-fill.srtf { background:var(--srtf-color); }
 
 .conclusion-panel {
   background:var(--surface);
@@ -312,6 +317,7 @@ table.metrics-table {
 }
 .q-item { margin-bottom:16px; padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent); }
 .q-item.sjf-q { border-left-color:var(--sjf-color); }
+.q-item.srtf-q { border-left-color:var(--srtf-color); }
 .q-question { font-size:12px; color:var(--text3); margin-bottom:6px; font-family:'JetBrains Mono',monospace; }
 .q-answer { font-size:13px; color:var(--text); font-weight:600; }
 
@@ -333,6 +339,7 @@ table.metrics-table {
 .stat-pill .sk { font-size:10px; color:var(--text3); margin-top:2px; letter-spacing:0.8px; text-transform:uppercase; }
 .stat-pill.rr-stat .sv { color:var(--rr-color); }
 .stat-pill.sjf-stat .sv { color:var(--sjf-color); }
+.stat-pill.srtf-stat .sv { color:var(--srtf-color); }
 .stat-pill.neutral .sv { color:var(--yellow); }
 
 .tab-row { display:flex; gap:0; border-bottom:1px solid var(--border); }
@@ -344,6 +351,7 @@ table.metrics-table {
 }
 .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
 .tab-btn.sjf-tab.active { color:var(--sjf-color); border-bottom-color:var(--sjf-color); }
+.tab-btn.srtf-tab.active { color:var(--srtf-color); border-bottom-color:var(--srtf-color); }
 .tab-content { display:none; padding:20px; }
 .tab-content.active { display:block; }
 
@@ -386,11 +394,12 @@ table.metrics-table {
   <div class="logo-badge">C5</div>
   <div class="header-text">
     <h1>CPU <span>Scheduling</span> Simulator</h1>
-    <p>C5 · Round Robin vs SJF · Non-preemptive SJF</p>
+    <p>Operating Systems Project · Round Robin vs SJF vs SRTF</p>
   </div>
   <div class="algo-pills">
     <span class="pill rr">RR</span>
     <span class="pill sjf">SJF</span>
+    <span class="pill srtf">SRTF</span>
   </div>
 </header>
 
@@ -434,7 +443,7 @@ table.metrics-table {
         <div class="section-title">Round Robin Settings</div>
         <div class="quantum-row">
           <label>TIME QUANTUM (Q)</label>
-          <input type="number" id="inQ" value="2" min="0" step="1" max="100" style="max-width:80px;" title="Must be a positive integer for RR (Scenario E uses Q=0 to demo validation)">
+          <input type="number" id="inQ" value="2" min="1" max="100" style="max-width:80px;">
           <div class="err-msg" id="errQ"></div>
         </div>
 
@@ -465,7 +474,6 @@ table.metrics-table {
           <button class="scenario-btn" onclick="loadScenario('B')"><span class="sc-label">Scenario B</span>Short-job heavy</button>
           <button class="scenario-btn" onclick="loadScenario('C')"><span class="sc-label">Scenario C</span>Fairness case</button>
           <button class="scenario-btn" onclick="loadScenario('D')"><span class="sc-label">Scenario D</span>Long-job sensitivity</button>
-          <button class="scenario-btn" onclick="loadScenario('E')" style="grid-column:1/-1;"><span class="sc-label">Scenario E</span>Validation — invalid quantum (Q=0)</button>
         </div>
 
         <div style="height:1px;background:var(--border);margin:16px 0;"></div>
@@ -620,9 +628,6 @@ const SCENARIOS = {
   D: { q:3, procs:[
     {pid:'P1',at:0,bt:20},{pid:'P2',at:1,bt:2},{pid:'P3',at:2,bt:3},
     {pid:'P4',at:3,bt:1},{pid:'P5',at:4,bt:2}
-  ]},
-  E: { q:0, procs:[
-    {pid:'P1',at:0,bt:5},{pid:'P2',at:2,bt:3}
   ]}
 };
 
@@ -630,16 +635,10 @@ function loadScenario(key) {
   const s = SCENARIOS[key];
   processes = s.procs.map((p,i) => ({...p, color: COLORS[i%COLORS.length]}));
   document.getElementById('inQ').value = s.q;
-  document.getElementById('inQ').classList.remove('error');
   renderProcessTable();
   hideAlert();
-  if (key === 'E') {
-    showAlert('Scenario E (validation): Q is set to 0 (invalid for RR). Click RUN SIMULATION to see rejection, then set Q ≥ 1 to continue.', 'success');
-    setTimeout(hideAlert, 6500);
-  } else {
-    showAlert('✓ Scenario ' + key + ' loaded — ' + processes.length + ' processes, Q='+s.q, 'success');
-    setTimeout(hideAlert, 2000);
-  }
+  showAlert('✓ Scenario ' + key + ' loaded — ' + processes.length + ' processes, Q='+s.q, 'success');
+  setTimeout(hideAlert, 2000);
 }
 
 function runRR(procs, quantum) {
@@ -725,22 +724,77 @@ function runSJF(procs) {
   return { gantt, metrics };
 }
 
+function runSRTF(procs) {
+  const n = procs.length;
+  const remaining = procs.map(p => p.bt);
+  const ft = new Array(n).fill(0);
+  const firstResp = new Array(n).fill(-1);
+  const gantt = [];
+  let time = 0;
+  let done = 0;
+  const inQueue = new Array(n).fill(false);
+  
+  while (done < n) {
+    const available = procs.map((p,i) => (!ft[i] && p.at <= time && remaining[i] > 0) ? i : -1).filter(i => i >= 0);
+    
+    if (!available.length) {
+      const next = Math.min(...procs.map((p,i) => (!ft[i] && remaining[i] > 0) ? p.at : Infinity));
+      if (next === Infinity) break;
+      gantt.push({pid:'IDLE', color:'#1f2d42', start:time, end:next});
+      time = next;
+      continue;
+    }
+    
+    available.sort((a,b) => remaining[a] - remaining[b]);
+    const idx = available[0];
+    
+    if (firstResp[idx] === -1) firstResp[idx] = time;
+    
+    const nextPreemptTime = Math.min(
+      ...procs.map((p,i) => (i !== idx && !ft[i] && p.at > time && p.at < time + remaining[idx]) ? p.at : Infinity)
+    );
+    
+    if (nextPreemptTime === Infinity) {
+      const start = time;
+      time += remaining[idx];
+      remaining[idx] = 0;
+      ft[idx] = time;
+      done++;
+      gantt.push({pid: procs[idx].pid, color: procs[idx].color, start, end: time});
+    } else {
+      const start = time;
+      const execTime = nextPreemptTime - time;
+      time = nextPreemptTime;
+      remaining[idx] -= execTime;
+      gantt.push({pid: procs[idx].pid, color: procs[idx].color, start, end: time});
+    }
+  }
+  
+  const metrics = procs.map((p,i) => {
+    const tat = ft[i] - p.at;
+    const wt  = tat - p.bt;
+    const rt  = firstResp[i] - p.at;
+    return { pid:p.pid, color:p.color, at:p.at, bt:p.bt, ft:ft[i], tat, wt, rt };
+  });
+  return { gantt, metrics };
+}
+
 function runSimulation() {
   hideAlert();
   if (!processes.length) { showAlert('⚠ Add at least one process before running.'); return; }
   if (processes.length < 2) { showAlert('⚠ Add at least 2 processes for meaningful comparison.'); return; }
   const qVal = document.getElementById('inQ').value.trim();
-  if (!qVal || isNaN(qVal) || !Number.isInteger(Number(qVal)) || parseInt(qVal, 10) < 1) {
+  if (!qVal || isNaN(qVal) || parseInt(qVal) < 1) {
     showAlert('⚠ Time Quantum must be a positive integer ≥ 1.');
     document.getElementById('inQ').classList.add('error');
     return;
   }
-  document.getElementById('inQ').classList.remove('error');
-  const quantum = parseInt(qVal, 10);
+  const quantum = parseInt(qVal);
   const sorted = [...processes].sort((a,b)=>a.at-b.at || a.pid.localeCompare(b.pid));
   const rrResult  = runRR([...sorted], quantum);
   const sjfResult = runSJF([...sorted]);
-  renderResults(rrResult, sjfResult, quantum, sorted);
+  const srtfResult = runSRTF([...sorted]);
+  renderResults(rrResult, sjfResult, srtfResult, quantum, sorted);
   document.getElementById('legendPanel').style.display='block';
   renderLegend(sorted);
 }
@@ -755,12 +809,13 @@ function stdev(arr) {
 }
 
  
-function renderResults(rr, sjf, quantum, procs) {
+function renderResults(rr, sjf, srtf, quantum, procs) {
   const area = document.getElementById('resultsArea');
   area.innerHTML = '';
   area.classList.add('fade-in');
   const rrAvgWT=avg(rr.metrics,'wt'), rrAvgTAT=avg(rr.metrics,'tat'), rrAvgRT=avg(rr.metrics,'rt');
   const sjfAvgWT=avg(sjf.metrics,'wt'), sjfAvgTAT=avg(sjf.metrics,'tat'), sjfAvgRT=avg(sjf.metrics,'rt');
+  const srtfAvgWT=avg(srtf.metrics,'wt'), srtfAvgTAT=avg(srtf.metrics,'tat'), srtfAvgRT=avg(srtf.metrics,'rt');
 
   area.innerHTML += `
   <div class="panel fade-in">
@@ -769,21 +824,29 @@ function renderResults(rr, sjf, quantum, procs) {
       <h2>Simulation Summary</h2>
     </div>
     <div class="panel-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
         <div>
-          <div style="font-size:11px;color:var(--rr-color);font-family:'JetBrains Mono',monospace;margin-bottom:8px;font-weight:700;">◈ ROUND ROBIN (Q=${quantum})</div>
+          <div style="font-size:10px;color:var(--rr-color);font-family:'JetBrains Mono',monospace;margin-bottom:6px;font-weight:700;">◈ ROUND ROBIN (Q=${quantum})</div>
           <div class="stats-row">
-            <div class="stat-pill rr-stat"><div class="sv">${rrAvgWT.toFixed(2)}</div><div class="sk">Avg WT</div></div>
-            <div class="stat-pill rr-stat"><div class="sv">${rrAvgTAT.toFixed(2)}</div><div class="sk">Avg TAT</div></div>
-            <div class="stat-pill rr-stat"><div class="sv">${rrAvgRT.toFixed(2)}</div><div class="sk">Avg RT</div></div>
+            <div class="stat-pill rr-stat"><div class="sv" style="font-size:18px;">${rrAvgWT.toFixed(2)}</div><div class="sk">Avg WT</div></div>
+            <div class="stat-pill rr-stat"><div class="sv" style="font-size:18px;">${rrAvgTAT.toFixed(2)}</div><div class="sk">Avg TAT</div></div>
+            <div class="stat-pill rr-stat"><div class="sv" style="font-size:18px;">${rrAvgRT.toFixed(2)}</div><div class="sk">Avg RT</div></div>
           </div>
         </div>
         <div>
-          <div style="font-size:11px;color:var(--sjf-color);font-family:'JetBrains Mono',monospace;margin-bottom:8px;font-weight:700;">◈ NON-PREEMPTIVE SJF</div>
+          <div style="font-size:10px;color:var(--sjf-color);font-family:'JetBrains Mono',monospace;margin-bottom:6px;font-weight:700;">◈ NON-PREEMPTIVE SJF</div>
           <div class="stats-row">
-            <div class="stat-pill sjf-stat"><div class="sv">${sjfAvgWT.toFixed(2)}</div><div class="sk">Avg WT</div></div>
-            <div class="stat-pill sjf-stat"><div class="sv">${sjfAvgTAT.toFixed(2)}</div><div class="sk">Avg TAT</div></div>
-            <div class="stat-pill sjf-stat"><div class="sv">${sjfAvgRT.toFixed(2)}</div><div class="sk">Avg RT</div></div>
+            <div class="stat-pill sjf-stat"><div class="sv" style="font-size:18px;">${sjfAvgWT.toFixed(2)}</div><div class="sk">Avg WT</div></div>
+            <div class="stat-pill sjf-stat"><div class="sv" style="font-size:18px;">${sjfAvgTAT.toFixed(2)}</div><div class="sk">Avg TAT</div></div>
+            <div class="stat-pill sjf-stat"><div class="sv" style="font-size:18px;">${sjfAvgRT.toFixed(2)}</div><div class="sk">Avg RT</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--srtf-color);font-family:'JetBrains Mono',monospace;margin-bottom:6px;font-weight:700;">◈ PREEMPTIVE SJF (SRTF)</div>
+          <div class="stats-row">
+            <div class="stat-pill srtf-stat"><div class="sv" style="font-size:18px;">${srtfAvgWT.toFixed(2)}</div><div class="sk">Avg WT</div></div>
+            <div class="stat-pill srtf-stat"><div class="sv" style="font-size:18px;">${srtfAvgTAT.toFixed(2)}</div><div class="sk">Avg TAT</div></div>
+            <div class="stat-pill srtf-stat"><div class="sv" style="font-size:18px;">${srtfAvgRT.toFixed(2)}</div><div class="sk">Avg RT</div></div>
           </div>
         </div>
       </div>
@@ -793,6 +856,7 @@ function renderResults(rr, sjf, quantum, procs) {
   area.innerHTML += buildGanttPanel(rr.gantt,'ROUND ROBIN','rr',quantum);
   area.innerHTML += buildQueuePanel(rr.queueLog, procs);
   area.innerHTML += buildGanttPanel(sjf.gantt,'NON-PREEMPTIVE SJF','sjf');
+  area.innerHTML += buildGanttPanel(srtf.gantt,'PREEMPTIVE SJF (SRTF)','srtf');
 
   area.innerHTML += `
   <div class="panel fade-in">
@@ -804,18 +868,22 @@ function renderResults(rr, sjf, quantum, procs) {
       <div class="tab-row">
         <button class="tab-btn active" onclick="switchTab(this,'tabRRMetrics')">Round Robin</button>
         <button class="tab-btn sjf-tab" onclick="switchTab(this,'tabSJFMetrics')">Non-Preemptive SJF</button>
+        <button class="tab-btn srtf-tab" onclick="switchTab(this,'tabSRTFMetrics')">Preemptive SJF (SRTF)</button>
       </div>
       <div id="tabRRMetrics" class="tab-content active">
-        ${buildMetricsTable(rr.metrics,rrAvgWT,rrAvgTAT,rrAvgRT,sjf.metrics,'rr')}
+        ${buildMetricsTable(rr.metrics,rrAvgWT,rrAvgTAT,rrAvgRT,[sjf.metrics, srtf.metrics],'rr')}
       </div>
       <div id="tabSJFMetrics" class="tab-content">
-        ${buildMetricsTable(sjf.metrics,sjfAvgWT,sjfAvgTAT,sjfAvgRT,rr.metrics,'sjf')}
+        ${buildMetricsTable(sjf.metrics,sjfAvgWT,sjfAvgTAT,sjfAvgRT,[rr.metrics, srtf.metrics],'sjf')}
+      </div>
+      <div id="tabSRTFMetrics" class="tab-content">
+        ${buildMetricsTable(srtf.metrics,srtfAvgWT,srtfAvgTAT,srtfAvgRT,[rr.metrics, sjf.metrics],'srtf')}
       </div>
     </div>
   </div>`;
 
-  area.innerHTML += buildComparison(rrAvgWT,rrAvgTAT,rrAvgRT,sjfAvgWT,sjfAvgTAT,sjfAvgRT,rr,sjf,quantum);
-  area.innerHTML += buildConclusion(rrAvgWT,rrAvgTAT,rrAvgRT,sjfAvgWT,sjfAvgTAT,sjfAvgRT,rr,sjf,quantum,procs);
+  area.innerHTML += buildComparison(rrAvgWT,rrAvgTAT,rrAvgRT,sjfAvgWT,sjfAvgTAT,sjfAvgRT,srtfAvgWT,srtfAvgTAT,srtfAvgRT,rr,sjf,srtf,quantum);
+  area.innerHTML += buildConclusion(rrAvgWT,rrAvgTAT,rrAvgRT,sjfAvgWT,sjfAvgTAT,sjfAvgRT,srtfAvgWT,srtfAvgTAT,srtfAvgRT,rr,sjf,srtf,quantum,procs);
 }
 
 function buildGanttPanel(gantt, title, cls, quantum) {
@@ -872,14 +940,23 @@ function buildQueuePanel(queueLog, procs) {
   </div>`;
 }
 
-function buildMetricsTable(metrics, avgWT, avgTAT, avgRT, otherMetrics, cls) {
-  const otherMap = {};
-  otherMetrics.forEach(m => { otherMap[m.pid] = m; });
+function buildMetricsTable(metrics, avgWT, avgTAT, avgRT, otherMetricsArray, cls) {
+  const otherMapsArray = otherMetricsArray.map(om => {
+    const map = {};
+    om.forEach(m => map[m.pid] = m);
+    return map;
+  });
   const rows = metrics.map(m => {
-    const oWT = otherMap[m.pid]?.wt, oTAT = otherMap[m.pid]?.tat, oRT = otherMap[m.pid]?.rt;
-    const wtB = oWT !== undefined ? (m.wt < oWT ? 'best' : (m.wt === oWT ? 'tie' : '')) : '';
-    const tatB = oTAT !== undefined ? (m.tat < oTAT ? 'best' : (m.tat === oTAT ? 'tie' : '')) : '';
-    const rtB = oRT !== undefined ? (m.rt < oRT ? 'best' : (m.rt === oRT ? 'tie' : '')) : '';
+    const comparisons = otherMapsArray.map(otherMap => ({
+      wt: otherMap[m.pid]?.wt,
+      tat: otherMap[m.pid]?.tat,
+      rt: otherMap[m.pid]?.rt
+    }));
+    
+    const wtB = comparisons.some(c => c.wt !== undefined && m.wt < c.wt) ? 'best' : (comparisons.some(c => c.wt === m.wt) ? 'tie' : '');
+    const tatB = comparisons.some(c => c.tat !== undefined && m.tat < c.tat) ? 'best' : (comparisons.some(c => c.tat === m.tat) ? 'tie' : '');
+    const rtB = comparisons.some(c => c.rt !== undefined && m.rt < c.rt) ? 'best' : (comparisons.some(c => c.rt === m.rt) ? 'tie' : '');
+    
     return `<tr>
       <td><span class="proc-color" style="background:${m.color}"></span></td>
       <td style="font-weight:700;color:${m.color}">${m.pid}</td>
@@ -890,35 +967,45 @@ function buildMetricsTable(metrics, avgWT, avgTAT, avgRT, otherMetrics, cls) {
     </tr>`;
   }).join('');
   return `<div class="metrics-table-wrap">
-    <table class="metrics-table ${cls==='sjf'?'sjf-table':''}">
+    <table class="metrics-table ${cls==='sjf'?'sjf-table':cls==='srtf'?'srtf-table':''}">
       <thead><tr><th></th><th>PID</th><th>AT</th><th>BT</th><th>FT</th><th>WT</th><th>TAT</th><th>RT</th></tr></thead>
       <tbody>${rows}
         <tr class="avg-row"><td colspan="5">AVERAGES</td><td>${avgWT.toFixed(2)}</td><td>${avgTAT.toFixed(2)}</td><td>${avgRT.toFixed(2)}</td></tr>
       </tbody>
     </table>
-    <div style="font-size:10px;color:var(--green);margin-top:6px;font-family:'JetBrains Mono',monospace;">🟢 Green = better than the other algorithm; 🟡 Yellow = tie</div>
+    <div style="font-size:10px;color:var(--green);margin-top:6px;font-family:'JetBrains Mono',monospace;">🟢 Green = better than other algorithms; 🟡 Yellow = equal performance</div>
   </div>`;
 }
 
 
-function buildComparison(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,rr,sjf,quantum) {
+function buildComparison(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,srtfWT,srtfTAT,srtfRT,rr,sjf,srtf,quantum) {
   const rrStdev=stdev(rr.metrics.map(m=>m.wt));
   const sjfStdev=stdev(sjf.metrics.map(m=>m.wt));
-  const rrWins=[rrWT<=sjfWT,rrTAT<=sjfTAT,rrRT<=sjfRT,rrStdev<=sjfStdev].filter(Boolean).length;
-  const sjfWins=4-rrWins;
-  const overallWin=rrWins>=2?'Round Robin':'Non-Preemptive SJF';
-  const overallColor=overallWin==='Round Robin'?'var(--rr-color)':'var(--sjf-color)';
-  const maxVal=Math.max(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,1);
+  const srtfStdev=stdev(srtf.metrics.map(m=>m.wt));
+  
+  const rrWins=[rrWT<=sjfWT&&rrWT<=srtfWT,rrTAT<=sjfTAT&&rrTAT<=srtfTAT,rrRT<=sjfRT&&rrRT<=srtfRT,rrStdev<=sjfStdev&&rrStdev<=srtfStdev].filter(Boolean).length;
+  const sjfWins=[sjfWT<=rrWT&&sjfWT<=srtfWT,sjfTAT<=rrTAT&&sjfTAT<=srtfTAT,sjfRT<=rrRT&&sjfRT<=srtfRT,sjfStdev<=rrStdev&&sjfStdev<=srtfStdev].filter(Boolean).length;
+  const srtfWins=[srtfWT<=rrWT&&srtfWT<=sjfWT,srtfTAT<=rrTAT&&srtfTAT<=sjfTAT,srtfRT<=rrRT&&srtfRT<=sjfRT,srtfStdev<=rrStdev&&srtfStdev<=sjfStdev].filter(Boolean).length;
+  
+  const maxVal=Math.max(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,srtfWT,srtfTAT,srtfRT,1);
 
-  function row(label,rrV,sjfV) {
-    const minV=Math.min(rrV,sjfV);
-    const tie=rrV===sjfV;
+  function row(label,rrV,sjfV,srtfV) {
+    const vals=[{name:'RR',v:rrV},{name:'SJF',v:sjfV},{name:'SRTF',v:srtfV}];
+    const minV=Math.min(rrV,sjfV,srtfV);
+    const ties=vals.filter(x=>x.v===minV).length;
     return `<tr>
       <td class="comp-key">${label}</td>
-      <td class="comp-val ${tie?'tie':rrV===minV?'win':'lose'}" style="text-align:right">${typeof rrV==='number'?rrV.toFixed(2):rrV}</td>
-      <td class="comp-val ${tie?'tie':sjfV===minV?'win':'lose'}" style="text-align:right">${typeof sjfV==='number'?sjfV.toFixed(2):sjfV}</td>
+      <td class="comp-val ${ties>1?'tie':rrV===minV?'win':'lose'}" style="text-align:right">${typeof rrV==='number'?rrV.toFixed(2):rrV}</td>
+      <td class="comp-val ${ties>1?'tie':sjfV===minV?'win':'lose'}" style="text-align:right">${typeof sjfV==='number'?sjfV.toFixed(2):sjfV}</td>
+      <td class="comp-val ${ties>1?'tie':srtfV===minV?'win':'lose'}" style="text-align:right">${typeof srtfV==='number'?srtfV.toFixed(2):srtfV}</td>
     </tr>`;
   }
+
+  const overallScores=[rrWins,sjfWins,srtfWins];
+  const maxScore=Math.max(...overallScores);
+  const winners=overallScores.map((s,i)=>s===maxScore?['RR','SJF','SRTF'][i]:null).filter(x=>x);
+  const overallWin=winners.length===1?winners[0]:'Tie';
+  const overallColor=overallWin==='RR'?'var(--rr-color)':overallWin==='SJF'?'var(--sjf-color)':overallWin==='SRTF'?'var(--srtf-color)':'var(--yellow)';
 
   return `
   <div class="panel fade-in">
@@ -933,30 +1020,31 @@ function buildComparison(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,rr,sjf,quantum) {
             <th style="padding:8px;background:var(--surface2);color:var(--text3);text-align:left;font-size:10px;letter-spacing:1px;">METRIC</th>
             <th style="padding:8px;background:rgba(0,212,255,0.1);color:var(--rr-color);text-align:right;font-size:11px;">RR (Q=${quantum})</th>
             <th style="padding:8px;background:rgba(255,107,53,0.1);color:var(--sjf-color);text-align:right;font-size:11px;">Non-Prep. SJF</th>
+            <th style="padding:8px;background:rgba(124,58,237,0.1);color:var(--srtf-color);text-align:right;font-size:11px;">Prep. SJF (SRTF)</th>
           </tr>
         </thead>
         <tbody>
-          ${row('Avg Waiting Time',rrWT,sjfWT)}
-          ${row('Avg Turnaround Time',rrTAT,sjfTAT)}
-          ${row('Avg Response Time',rrRT,sjfRT)}
-          ${row('WT Std Dev (Fairness)',rrStdev,sjfStdev)}
-          ${row('Min WT',Math.min(...rr.metrics.map(m=>m.wt)),Math.min(...sjf.metrics.map(m=>m.wt)))}
-          ${row('Max WT',Math.max(...rr.metrics.map(m=>m.wt)),Math.max(...sjf.metrics.map(m=>m.wt)))}
-          ${row('Min TAT',Math.min(...rr.metrics.map(m=>m.tat)),Math.min(...sjf.metrics.map(m=>m.tat)))}
-          ${row('Max TAT',Math.max(...rr.metrics.map(m=>m.tat)),Math.max(...sjf.metrics.map(m=>m.tat)))}
+          ${row('Avg Waiting Time',rrWT,sjfWT,srtfWT)}
+          ${row('Avg Turnaround Time',rrTAT,sjfTAT,srtfTAT)}
+          ${row('Avg Response Time',rrRT,sjfRT,srtfRT)}
+          ${row('WT Std Dev (Fairness)',rrStdev,sjfStdev,srtfStdev)}
+          ${row('Min WT',Math.min(...rr.metrics.map(m=>m.wt)),Math.min(...sjf.metrics.map(m=>m.wt)),Math.min(...srtf.metrics.map(m=>m.wt)))}
+          ${row('Max WT',Math.max(...rr.metrics.map(m=>m.wt)),Math.max(...sjf.metrics.map(m=>m.wt)),Math.max(...srtf.metrics.map(m=>m.wt)))}
+          ${row('Min TAT',Math.min(...rr.metrics.map(m=>m.tat)),Math.min(...sjf.metrics.map(m=>m.tat)),Math.min(...srtf.metrics.map(m=>m.tat)))}
+          ${row('Max TAT',Math.max(...rr.metrics.map(m=>m.tat)),Math.max(...sjf.metrics.map(m=>m.tat)),Math.max(...srtf.metrics.map(m=>m.tat)))}
         </tbody>
       </table>
       <div style="height:1px;background:var(--border);margin:16px 0;"></div>
       <div class="section-title">Visual Comparison</div>
       <div class="bar-compare">
-        ${barRow('Avg Waiting Time',rrWT,sjfWT,maxVal)}
-        ${barRow('Avg Turnaround Time',rrTAT,sjfTAT,maxVal)}
-        ${barRow('Avg Response Time',rrRT,sjfRT,maxVal)}
+        ${barRowThree('Avg Waiting Time',rrWT,sjfWT,srtfWT,maxVal)}
+        ${barRowThree('Avg Turnaround Time',rrTAT,sjfTAT,srtfTAT,maxVal)}
+        ${barRowThree('Avg Response Time',rrRT,sjfRT,srtfRT,maxVal)}
       </div>
       <div style="margin-top:16px;padding:16px;border-radius:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);text-align:center;">
         <div style="font-size:12px;color:var(--text3);margin-bottom:4px;font-family:'JetBrains Mono',monospace;">OVERALL WINNER</div>
         <div style="font-size:22px;font-weight:800;color:${overallColor};">${overallWin}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:4px;font-family:'JetBrains Mono',monospace;">RR: ${rrWins}/4 · SJF: ${sjfWins}/4</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;font-family:'JetBrains Mono',monospace;">RR: ${rrWins}/4 | SJF: ${sjfWins}/4 | SRTF: ${srtfWins}/4</div>
       </div>
     </div>
   </div>`;
@@ -980,19 +1068,57 @@ function barRow(label,rrV,sjfV,maxV) {
   </div>`;
 }
 
-function buildConclusion(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,rr,sjf,quantum,procs) {
+function barRowThree(label,rrV,sjfV,srtfV,maxV) {
+  const rrW=(rrV/maxV*100).toFixed(1), sjfW=(sjfV/maxV*100).toFixed(1), srtfW=(srtfV/maxV*100).toFixed(1);
+  return `<div class="bar-item">
+    <div class="bar-label"><span>${label}</span><span style="color:var(--text3);">RR: ${rrV.toFixed(2)} | SJF: ${sjfV.toFixed(2)} | SRTF: ${srtfV.toFixed(2)}</span></div>
+    <div style="display:flex;flex-direction:column;gap:3px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;color:var(--rr-color);width:32px;font-family:'JetBrains Mono',monospace;">RR</span>
+        <div class="bar-track" style="flex:1;"><div class="bar-fill rr" style="width:${rrW}%"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;color:var(--sjf-color);width:32px;font-family:'JetBrains Mono',monospace;">SJF</span>
+        <div class="bar-track" style="flex:1;"><div class="bar-fill sjf" style="width:${sjfW}%"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;color:var(--srtf-color);width:32px;font-family:'JetBrains Mono',monospace;">SRTF</span>
+        <div class="bar-track" style="flex:1;"><div class="bar-fill srtf" style="width:${srtfW}%"></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+ 
+function buildConclusion(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,srtfWT,srtfTAT,srtfRT,rr,sjf,srtf,quantum,procs) {
   const rrStdev=stdev(rr.metrics.map(m=>m.wt));
   const sjfStdev=stdev(sjf.metrics.map(m=>m.wt));
-  const wtWin=rrWT<=sjfWT?'Round Robin':'Non-Preemptive SJF';
-  const rtWin=rrRT<=sjfRT?'Round Robin':'Non-Preemptive SJF';
-  const tatWin=rrTAT<=sjfTAT?'Round Robin':'Non-Preemptive SJF';
+  const srtfStdev=stdev(srtf.metrics.map(m=>m.wt));
+  
+  const wtVals=[{name:'RR',v:rrWT},{name:'SJF',v:sjfWT},{name:'SRTF',v:srtfWT}];
+  wtVals.sort((a,b)=>a.v-b.v);
+  const wtWin=wtVals[0].name;
+  
+  const rtVals=[{name:'RR',v:rrRT},{name:'SJF',v:sjfRT},{name:'SRTF',v:srtfRT}];
+  rtVals.sort((a,b)=>a.v-b.v);
+  const rtWin=rtVals[0].name;
+  
+  const tatVals=[{name:'RR',v:rrTAT},{name:'SJF',v:sjfTAT},{name:'SRTF',v:srtfTAT}];
+  tatVals.sort((a,b)=>a.v-b.v);
+  const tatWin=tatVals[0].name;
+  
   const shortJobPids=procs.filter(p=>p.bt<=3).map(p=>p.pid).join(', ')||'none';
-  const rrWins=[rrWT<=sjfWT,rrTAT<=sjfTAT,rrRT<=sjfRT,rrStdev<=sjfStdev].filter(Boolean).length;
-  const sjfWins=4-rrWins;
-  const recommend=rrWins>=2?'Round Robin':'Non-Preemptive SJF';
-  const recommendReason=recommend==='Round Robin'
-    ? 'provides fairer distribution and better response times with Q='+quantum
-    : 'minimizes waiting time and turnaround time, especially for short jobs';
+  
+  const rrWins=[rrWT<=sjfWT&&rrWT<=srtfWT,rrTAT<=sjfTAT&&rrTAT<=srtfTAT,rrRT<=sjfRT&&rrRT<=srtfRT,rrStdev<=sjfStdev&&rrStdev<=srtfStdev].filter(Boolean).length;
+  const sjfWins=[sjfWT<=rrWT&&sjfWT<=srtfWT,sjfTAT<=rrTAT&&sjfTAT<=srtfTAT,sjfRT<=rrRT&&sjfRT<=srtfRT,sjfStdev<=rrStdev&&sjfStdev<=srtfStdev].filter(Boolean).length;
+  const srtfWins=[srtfWT<=rrWT&&srtfWT<=sjfWT,srtfTAT<=rrTAT&&srtfTAT<=sjfTAT,srtfRT<=rrRT&&srtfRT<=sjfRT,srtfStdev<=rrStdev&&srtfStdev<=sjfStdev].filter(Boolean).length;
+  
+  const scores=[{name:'RR',s:rrWins},{name:'SJF',s:sjfWins},{name:'SRTF',s:srtfWins}];
+  scores.sort((a,b)=>b.s-a.s);
+  const recommend=scores[0].name;
+  
+  const preemptiveAdvantage=srtfWT<sjfWT?'✓ SRTF shows lower average waiting time by allowing preemption':'';
+  const preemptiveNote=srtfRT<sjfRT?'✓ SRTF provides better response time due to preemptive nature':'';
 
   return `
   <div class="conclusion-panel panel fade-in">
@@ -1002,37 +1128,42 @@ function buildConclusion(rrWT,rrTAT,rrRT,sjfWT,sjfTAT,sjfRT,rr,sjf,quantum,procs
     </div>
     <div class="panel-body">
       <div class="q-item">
-        <div class="q-question">Q1. Which algorithm gave lower average waiting time?</div>
-        <div class="q-answer">${wtWin} — WT: RR=${rrWT.toFixed(2)}, SJF=${sjfWT.toFixed(2)}</div>
+        <div class="q-question">Q1. Which algorithm gave the lowest average waiting time?</div>
+        <div class="q-answer">${wtWin} — WT: RR=${rrWT.toFixed(2)}, SJF=${sjfWT.toFixed(2)}, SRTF=${srtfWT.toFixed(2)}</div>
       </div>
-      <div class="q-item ${rtWin==='Non-Preemptive SJF'?'sjf-q':''}">
-        <div class="q-question">Q2. Which algorithm gave lower average response time?</div>
-        <div class="q-answer">${rtWin} — RT: RR=${rrRT.toFixed(2)}, SJF=${sjfRT.toFixed(2)}</div>
-      </div>
-      <div class="q-item">
-        <div class="q-question">Q3. Did Round Robin appear fairer across all processes?</div>
-        <div class="q-answer">${rrStdev<=sjfStdev?'Yes — RR WT std dev ('+rrStdev.toFixed(2)+') ≤ SJF ('+sjfStdev.toFixed(2)+'), indicating more balanced service':'Not in this case — SJF std dev ('+sjfStdev.toFixed(2)+') < RR ('+rrStdev.toFixed(2)+') for this workload'}</div>
-      </div>
-      <div class="q-item sjf-q">
-        <div class="q-question">Q4. Did SJF complete short jobs more efficiently?</div>
-        <div class="q-answer">Yes — SJF always picks the shortest available job. Short processes (${shortJobPids}) get priority, often achieving lower individual waiting time than RR for those jobs.</div>
+      <div class="q-item ${rtWin==='SJF'?'sjf-q':rtWin==='SRTF'?'srtf-q':''}">
+        <div class="q-question">Q2. Which algorithm gave the lowest average response time?</div>
+        <div class="q-answer">${rtWin} — RT: RR=${rrRT.toFixed(2)}, SJF=${sjfRT.toFixed(2)}, SRTF=${srtfRT.toFixed(2)}</div>
       </div>
       <div class="q-item">
-        <div class="q-question">Q5. How did the quantum (Q=${quantum}) affect Round Robin?</div>
-        <div class="q-answer">${quantum<=2?'Q='+quantum+' is small — higher context-switch overhead, very responsive. Good for interactive systems.':quantum<=5?'Q='+quantum+' is moderate — balanced responsiveness and overhead. Suitable for general-purpose workloads.':'Q='+quantum+' is large — RR behaves closer to FCFS, reducing fairness benefits but lowering context-switch overhead.'}</div>
+        <div class="q-question">Q3. Which algorithm was fairest to all processes?</div>
+        <div class="q-answer">${rrStdev<=sjfStdev&&rrStdev<=srtfStdev?'Round Robin':sjfStdev<=rrStdev&&sjfStdev<=srtfStdev?'Non-Preemptive SJF':'Preemptive SJF (SRTF)'} — Lower std dev (${Math.min(rrStdev,sjfStdev,srtfStdev).toFixed(2)}) indicates more balanced waiting times</div>
       </div>
-      <div class="q-item ${recommend==='Non-Preemptive SJF'?'sjf-q':''}">
-        <div class="q-question">Q6. Which algorithm would you recommend for this workload?</div>
-        <div class="q-answer">▶ ${recommend} — it ${recommendReason}. Score: RR ${rrWins}/4 metrics, SJF ${sjfWins}/4.</div>
+      <div class="q-item">
+        <div class="q-question">Q4. Did SJF variants complete short jobs more efficiently?</div>
+        <div class="q-answer">Yes — Both SJF and SRTF prioritize short jobs. Short processes (${shortJobPids}) get faster completion, especially with SRTF preemption. TAT: SJF=${sjfTAT.toFixed(2)}, SRTF=${srtfTAT.toFixed(2)}</div>
+      </div>
+      <div class="q-item srtf-q">
+        <div class="q-question">Q5. How did preemption in SRTF affect performance versus Non-Preemptive SJF?</div>
+        <div class="q-answer">${preemptiveAdvantage} ${preemptiveAdvantage&&preemptiveNote?'<br>':preemptiveNote?preemptiveNote:'SRTF preemption allows shorter jobs arriving later to interrupt longer jobs, reducing waiting time for new arrivals.'}</div>
+      </div>
+      <div class="q-item">
+        <div class="q-question">Q6. How did the quantum (Q=${quantum}) affect Round Robin?</div>
+        <div class="q-answer">${quantum<=2?'Q='+quantum+' is small — high context-switch overhead, very responsive. Good for interactive systems.':quantum<=5?'Q='+quantum+' is moderate — balanced responsiveness and overhead. Suitable for general-purpose workloads.':'Q='+quantum+' is large — RR behaves closer to FCFS, reducing fairness benefits but lowering context-switch overhead.'}</div>
+      </div>
+      <div class="q-item ${recommend==='SJF'?'sjf-q':recommend==='SRTF'?'srtf-q':''}">
+        <div class="q-question">Q7. Which algorithm would you recommend for this workload?</div>
+        <div class="q-answer">▶ ${recommend} — Score: RR=${rrWins}/4, SJF=${sjfWins}/4, SRTF=${srtfWins}/4 metrics won. ${recommend==='SRTF'?'Preemption provides optimal scheduling benefits.':recommend==='SJF'?'Non-preemptive SJF minimizes waiting time with lower overhead.':'Round Robin provides fairness and responsiveness.'}</div>
       </div>
       <div style="height:1px;background:var(--border);margin:16px 0;"></div>
       <div class="section-title">Key Findings</div>
       <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text2);">
-        <div>• <strong style="color:var(--text)">Avg WT:</strong> ${wtWin} — best value ${Math.min(rrWT,sjfWT).toFixed(2)}</div>
-        <div>• <strong style="color:var(--text)">Avg TAT:</strong> ${tatWin} — best value ${Math.min(rrTAT,sjfTAT).toFixed(2)}</div>
-        <div>• <strong style="color:var(--text)">Avg RT:</strong> ${rtWin} — best value ${Math.min(rrRT,sjfRT).toFixed(2)}</div>
-        <div>• <strong style="color:var(--text)">Fairness (WT std dev):</strong> ${rrStdev<=sjfStdev?'Round Robin':'Non-Preemptive SJF'} — lower is ${Math.min(rrStdev,sjfStdev).toFixed(2)}</div>
-        <div>• <strong style="color:var(--text)">Overall:</strong> ${recommend} leads on ${Math.max(rrWins,sjfWins)}/4 head-to-head metrics (using majority rule)</div>
+        <div>• <strong style="color:var(--text)">Avg WT:</strong> ${wtWin} performed best (${Math.min(rrWT,sjfWT,srtfWT).toFixed(2)})</div>
+        <div>• <strong style="color:var(--text)">Avg TAT:</strong> ${tatWin} performed best (${Math.min(rrTAT,sjfTAT,srtfTAT).toFixed(2)})</div>
+        <div>• <strong style="color:var(--text)">Avg RT:</strong> ${rtWin} performed best (${Math.min(rrRT,sjfRT,srtfRT).toFixed(2)})</div>
+        <div>• <strong style="color:var(--text)">Fairness:</strong> ${rrStdev<=sjfStdev&&rrStdev<=srtfStdev?'Round Robin':sjfStdev<=rrStdev&&sjfStdev<=srtfStdev?'SJF':'SRTF'} showed the most balanced distribution</div>
+        <div>• <strong style="color:var(--text)">Preemption Impact:</strong> ${srtfWT<sjfWT?'SRTF (preemptive) outperformed SJF (non-preemptive) in waiting time':'SJF and SRTF showed similar waiting time'}</div>
+        <div>• <strong style="color:var(--text)">Overall Winner:</strong> ${recommend} won ${Math.max(rrWins,sjfWins,srtfWins)}/4 comparison metrics</div>
       </div>
     </div>
   </div>`;
@@ -1066,7 +1197,6 @@ function resetAll() {
   document.getElementById('inAT').value='';
   document.getElementById('inBT').value='';
   document.getElementById('inQ').value='2';
-  document.getElementById('inQ').classList.remove('error');
   clearErrors();
 }
 
