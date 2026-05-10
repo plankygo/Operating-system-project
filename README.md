@@ -4,6 +4,10 @@
 
 A web-based CPU scheduling simulator that compares Round Robin (RR), Non-Preemptive Shortest Job First (SJF), and Preemptive SJF (SRTF) algorithms with interactive Gantt charts, metrics tables, and visual comparisons.
 
+## 🚀 Live Simulator
+
+**[▶ Click here to run the simulator](https://plankygo.github.io/Operating-system-project/cpu_scheduler.html)**
+
 ---
 
 ## Project Description
