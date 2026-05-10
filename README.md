@@ -1,101 +1,92 @@
-# CPU Scheduling Simulator — Round Robin vs SJF
+# C5 — Round Robin vs SJF Comparison Project
 
-**Operating Systems Course | Helwan University | Faculty of Computer Science & AI**
+**Operating Systems Course · Helwan University · Faculty of Computer Science & AI**
 
-A web-based CPU scheduling simulator that compares Round Robin (RR), Non-Preemptive Shortest Job First (SJF), and Preemptive SJF (SRTF) algorithms with interactive Gantt charts, metrics tables, and visual comparisons.
+A web-based simulator that implements **Round Robin (RR)** and **non-preemptive Shortest Job First (SJF)** on the same workload, compares waiting time, turnaround time, response time, and fairness, and summarizes results with Gantt charts, metrics tables, and automated analysis — aligned with the **C5** project specification (RR vs SJF only; **no SRTF**).
 
-## 🚀 Live Simulator
+## Live simulator
 
-**[▶ Click here to run the simulator](https://plankygo.github.io/Operating-system-project/cpu_scheduler.html)**
+**[Open the simulator (GitHub Pages)](https://plankygo.github.io/Operating-system-project/cpu_scheduler.html)**
 
----
-
-## Project Description
-
-This simulator allows users to input custom processes or load prebuilt scenarios and instantly visualize how three CPU scheduling algorithms handle the same workload. It computes and compares:
-
-- Average Waiting Time (WT)
-- Average Turnaround Time (TAT)
-- Average Response Time (RT)
-- Fairness (WT Standard Deviation)
-
-The project covers 5 documented scenarios:
-- **Scenario A** — Basic Mixed Workload
-- **Scenario B** — Short-Job Heavy Case
-- **Scenario C** — Fairness Case
-- **Scenario D** — Long-Job Sensitivity Case
-- **Scenario E** — Input Validation Case
+*(Use the local `cpu_scheduler.html` if your fork uses a different Pages URL.)*
 
 ---
 
-## Implementation Technology
+## What it does (spec checklist)
 
-- **Language:** HTML, CSS, JavaScript (Vanilla)
-- **GUI:** Browser-based interface with interactive Gantt charts, ready queue tracker, metrics tables, and bar chart comparisons
-- **No frameworks or installations required**
+| Requirement | Implementation |
+|---------------|----------------|
+| RR + non-preemptive SJF | Both algorithms run on the same sorted process list |
+| Time quantum | User sets **Q** for RR only; invalid **Q** is rejected |
+| Dynamic processes | Add/remove processes at runtime |
+| Input validation | PID, AT, BT, quantum, minimum process count |
+| RR correctness | Queue rotation, arrivals, remaining burst |
+| SJF correctness | Non-preemptive; shortest burst among **arrived** jobs |
+| Gantt charts | Separate charts for RR and SJF |
+| Metrics | Per-process **WT**, **TAT**, **RT** and averages |
+| Ready queue | **Ready Queue Tracker** after RR Gantt |
+| Comparison | Head-to-head table + bar charts |
+| Conclusion | Q&A block covering waiting/response times, fairness, quantum effect, recommendation |
 
 ---
 
-## How to Run
+## Five test scenarios
 
-1. Clone or download this repository
-2. Open `cpu_scheduler.html` in any modern web browser (Chrome, Firefox, Edge)
-3. Add processes manually or click one of the preloaded scenario buttons (A, B, C, D)
-4. Set the Time Quantum for Round Robin
+| Scenario | Purpose |
+|----------|---------|
+| **A** | Basic mixed workload |
+| **B** | Short-job–heavy (highlights SJF) |
+| **C** | Fairness / balanced bursts (highlights RR) |
+| **D** | Long-job sensitivity vs short jobs |
+| **E** | **Validation** — loads two processes with **Q = 0**. Click **RUN SIMULATION** to see quantum rejection; then set **Q ≥ 1** to run normally |
+
+---
+
+## Technology
+
+- **HTML, CSS, JavaScript** (vanilla; no build step)
+- Open **`cpu_scheduler.html`** in a modern browser
+
+---
+
+## How to run locally
+
+1. Clone or download this repository  
+2. Open **`cpu_scheduler.html`** in Chrome, Firefox, or Edge  
+3. Add processes manually or load scenarios **A–E**  
+4. Set **Time Quantum** for RR  
 5. Click **RUN SIMULATION**
 
-That's it — no setup, no install, no server needed.
-
 ---
 
-## Repository Structure
+## Repository layout (typical)
 
 ```
-Operating-system-project/
-│
-├── cpu_scheduler.html          # Main simulator (source code)
-├── README.md                   # Project documentation
-│
-├── Scenario_A_mixed.docx       # Scenario A documentation
-├── Scenario_B_Short.docx       # Scenario B documentation
-├── Scenario_C_Fairness.docx    # Scenario C documentation
-├── Scenario_D_Long.docx        # Scenario D documentation
-├── Scenario_E_Validation_Case-1.docx  # Scenario E documentation
-├── RR_vs_SJF_Scheduling_Report.docx   # Full comparison report
-│
-└── screenshots/                # Interface and Gantt chart screenshots
+├── cpu_scheduler.html          # Single-file app (UI + logic)
+├── README.md
+├── Scenario_*_*.docx           # Scenario write-ups (if present)
+├── RR_vs_SJF_Scheduling_Report.docx
+└── screenshots/
 ```
 
 ---
 
-## Features
+## Input validation (summary)
 
-- Add custom processes with validation (no negative values, no duplicates, no zero quantum)
-- Preloaded Scenario buttons (A, B, C, D) for instant simulation
-- Interactive color-coded Gantt charts for all three algorithms
-- Ready Queue Tracker for Round Robin
-- Per-process metrics table with best values highlighted in green
-- Head-to-head comparison table with visual bar charts
-- Auto-generated analysis answers (Q1–Q7)
-- Reset button to clear all inputs
+Simulation is blocked when:
 
----
+- Fewer than **2** processes  
+- **Time quantum** empty, non-integer, or less than **1**  
+- Invalid process fields when adding a row (handled on **Add Process**)
 
-## Input Validation
-
-The simulator rejects:
-- Quantum ≤ 0 or non-integer
-- Burst Time < 1 or negative
-- Arrival Time < 0
-- Duplicate Process IDs
-- Less than 2 processes
+Scenario **E** deliberately sets **Q = 0** so you can demonstrate handling of an invalid quantum.
 
 ---
 
-## Team Members
+## Team members
 
 | Name | ID |
-|---|---|
+|------|-----|
 | Hussein Walid Hussein Awad *(Team Leader)* | 20240305 |
 | Ezzeldeen Mohamed Rabie Mohamed | 20240595 |
 | Amr Ahmed Mahmoud Ahmed | 20241200 |
@@ -106,9 +97,9 @@ The simulator rejects:
 
 ---
 
-## Course Information
+## Course information
 
-- **University:** Helwan University
-- **Faculty:** Computer Science & Artificial Intelligence
-- **Course:** Operating Systems
-- **Year:** 2025–2026
+- **University:** Helwan University  
+- **Faculty:** Computer Science & Artificial Intelligence  
+- **Course:** Operating Systems  
+- **Year:** 2025–2026  

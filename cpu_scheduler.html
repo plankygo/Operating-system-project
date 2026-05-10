@@ -24,7 +24,6 @@
   --text3: #64748b;
   --rr-color: #00d4ff;
   --sjf-color: #ff6b35;
-  --srtf-color: #7c3aed;
   --radius: 12px;
   --shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
@@ -76,7 +75,6 @@ header {
 }
 .pill.rr { background:rgba(0,212,255,0.15); color:var(--rr-color); border:1px solid rgba(0,212,255,0.3); }
 .pill.sjf { background:rgba(255,107,53,0.15); color:var(--sjf-color); border:1px solid rgba(255,107,53,0.3); }
-.pill.srtf { background:rgba(124,58,237,0.15); color:var(--srtf-color); border:1px solid rgba(124,58,237,0.3); }
 
 .main-grid {
   display: grid;
@@ -227,7 +225,6 @@ table.proc-table {
 .gantt-title { font-size:13px; font-weight:700; }
 .gantt-title.rr { color:var(--rr-color); }
 .gantt-title.sjf { color:var(--sjf-color); }
-.gantt-title.srtf { color:var(--srtf-color); }
 .gantt-body { padding:20px; }
 
  
@@ -279,7 +276,6 @@ table.metrics-table {
   font-weight:700; color:var(--accent);
 }
 .metrics-table.sjf-table tr.avg-row td { color:var(--sjf-color); }
-.metrics-table.srtf-table tr.avg-row td { color:var(--srtf-color); }
 .metric-val { font-weight:600; }
 .best { color:var(--green) !important; }
 .tie { color:var(--yellow) !important; }
@@ -307,7 +303,6 @@ table.metrics-table {
 .bar-fill { height:100%; border-radius:4px; transition:width .6s cubic-bezier(.4,0,.2,1); }
 .bar-fill.rr { background:var(--rr-color); }
 .bar-fill.sjf { background:var(--sjf-color); }
-.bar-fill.srtf { background:var(--srtf-color); }
 
 .conclusion-panel {
   background:var(--surface);
@@ -317,7 +312,6 @@ table.metrics-table {
 }
 .q-item { margin-bottom:16px; padding:14px; background:var(--surface2); border-radius:8px; border-left:3px solid var(--accent); }
 .q-item.sjf-q { border-left-color:var(--sjf-color); }
-.q-item.srtf-q { border-left-color:var(--srtf-color); }
 .q-question { font-size:12px; color:var(--text3); margin-bottom:6px; font-family:'JetBrains Mono',monospace; }
 .q-answer { font-size:13px; color:var(--text); font-weight:600; }
 
@@ -339,7 +333,6 @@ table.metrics-table {
 .stat-pill .sk { font-size:10px; color:var(--text3); margin-top:2px; letter-spacing:0.8px; text-transform:uppercase; }
 .stat-pill.rr-stat .sv { color:var(--rr-color); }
 .stat-pill.sjf-stat .sv { color:var(--sjf-color); }
-.stat-pill.srtf-stat .sv { color:var(--srtf-color); }
 .stat-pill.neutral .sv { color:var(--yellow); }
 
 .tab-row { display:flex; gap:0; border-bottom:1px solid var(--border); }
@@ -351,7 +344,6 @@ table.metrics-table {
 }
 .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
 .tab-btn.sjf-tab.active { color:var(--sjf-color); border-bottom-color:var(--sjf-color); }
-.tab-btn.srtf-tab.active { color:var(--srtf-color); border-bottom-color:var(--srtf-color); }
 .tab-content { display:none; padding:20px; }
 .tab-content.active { display:block; }
 
@@ -394,7 +386,7 @@ table.metrics-table {
   <div class="logo-badge">C5</div>
   <div class="header-text">
     <h1>CPU <span>Scheduling</span> Simulator</h1>
-    <p>Operating Systems Project · Round Robin vs SJF</p>
+    <p>C5 · Round Robin vs SJF · Non-preemptive SJF</p>
   </div>
   <div class="algo-pills">
     <span class="pill rr">RR</span>
@@ -442,7 +434,7 @@ table.metrics-table {
         <div class="section-title">Round Robin Settings</div>
         <div class="quantum-row">
           <label>TIME QUANTUM (Q)</label>
-          <input type="number" id="inQ" value="2" min="1" max="100" style="max-width:80px;">
+          <input type="number" id="inQ" value="2" min="0" step="1" max="100" style="max-width:80px;" title="Must be a positive integer for RR (Scenario E uses Q=0 to demo validation)">
           <div class="err-msg" id="errQ"></div>
         </div>
 
@@ -473,6 +465,7 @@ table.metrics-table {
           <button class="scenario-btn" onclick="loadScenario('B')"><span class="sc-label">Scenario B</span>Short-job heavy</button>
           <button class="scenario-btn" onclick="loadScenario('C')"><span class="sc-label">Scenario C</span>Fairness case</button>
           <button class="scenario-btn" onclick="loadScenario('D')"><span class="sc-label">Scenario D</span>Long-job sensitivity</button>
+          <button class="scenario-btn" onclick="loadScenario('E')" style="grid-column:1/-1;"><span class="sc-label">Scenario E</span>Validation — invalid quantum (Q=0)</button>
         </div>
 
         <div style="height:1px;background:var(--border);margin:16px 0;"></div>
@@ -627,6 +620,9 @@ const SCENARIOS = {
   D: { q:3, procs:[
     {pid:'P1',at:0,bt:20},{pid:'P2',at:1,bt:2},{pid:'P3',at:2,bt:3},
     {pid:'P4',at:3,bt:1},{pid:'P5',at:4,bt:2}
+  ]},
+  E: { q:0, procs:[
+    {pid:'P1',at:0,bt:5},{pid:'P2',at:2,bt:3}
   ]}
 };
 
@@ -634,10 +630,16 @@ function loadScenario(key) {
   const s = SCENARIOS[key];
   processes = s.procs.map((p,i) => ({...p, color: COLORS[i%COLORS.length]}));
   document.getElementById('inQ').value = s.q;
+  document.getElementById('inQ').classList.remove('error');
   renderProcessTable();
   hideAlert();
-  showAlert('✓ Scenario ' + key + ' loaded — ' + processes.length + ' processes, Q='+s.q, 'success');
-  setTimeout(hideAlert, 2000);
+  if (key === 'E') {
+    showAlert('Scenario E (validation): Q is set to 0 (invalid for RR). Click RUN SIMULATION to see rejection, then set Q ≥ 1 to continue.', 'success');
+    setTimeout(hideAlert, 6500);
+  } else {
+    showAlert('✓ Scenario ' + key + ' loaded — ' + processes.length + ' processes, Q='+s.q, 'success');
+    setTimeout(hideAlert, 2000);
+  }
 }
 
 function runRR(procs, quantum) {
@@ -728,12 +730,13 @@ function runSimulation() {
   if (!processes.length) { showAlert('⚠ Add at least one process before running.'); return; }
   if (processes.length < 2) { showAlert('⚠ Add at least 2 processes for meaningful comparison.'); return; }
   const qVal = document.getElementById('inQ').value.trim();
-  if (!qVal || isNaN(qVal) || parseInt(qVal) < 1) {
+  if (!qVal || isNaN(qVal) || !Number.isInteger(Number(qVal)) || parseInt(qVal, 10) < 1) {
     showAlert('⚠ Time Quantum must be a positive integer ≥ 1.');
     document.getElementById('inQ').classList.add('error');
     return;
   }
-  const quantum = parseInt(qVal);
+  document.getElementById('inQ').classList.remove('error');
+  const quantum = parseInt(qVal, 10);
   const sorted = [...processes].sort((a,b)=>a.at-b.at || a.pid.localeCompare(b.pid));
   const rrResult  = runRR([...sorted], quantum);
   const sjfResult = runSJF([...sorted]);
@@ -1063,6 +1066,7 @@ function resetAll() {
   document.getElementById('inAT').value='';
   document.getElementById('inBT').value='';
   document.getElementById('inQ').value='2';
+  document.getElementById('inQ').classList.remove('error');
   clearErrors();
 }
 
